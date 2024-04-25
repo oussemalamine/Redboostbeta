@@ -23,6 +23,8 @@ const getEvents = require('./routes/api/getEvents')
 const deleteEvent = require('./routes/api/DeleteEvent')
 const UpdateEvent = require('./routes/api/UpdateEvent')
 const forgetPassword = require('./routes/api/ForgetPassword')
+const handleProgram = require('./routes/api/handleProgram')
+const handleActivity = require('./routes/api/handleActivity')
 require('./passport/index')
 
 // Increase payload size limit for body-parser
@@ -76,6 +78,12 @@ app.get('/events', getEvents)
 app.put('/users/:userId', UpdateUser)
 app.put('/events/:idEvent', UpdateEvent)
 app.delete('/events/:idEvent', deleteEvent)
+app.post('/addProgram', handleProgram)
+app.delete('/deleteProgram/:programId ', handleProgram)
+app.put('/updateProgram/:programId', handleProgram)
+app.post('/addActivity', handleActivity)
+app.delete('/deleteActivity/:activityId', handleActivity)
+app.put('/updateActivity/:activityId', handleActivity)
 // Database + Server Connection Validation
 mongoose
   .connect(db)

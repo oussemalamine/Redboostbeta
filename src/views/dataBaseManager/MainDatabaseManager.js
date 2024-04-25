@@ -1,6 +1,5 @@
 import React from 'react'
 import { CRow, CCol, CCard, CCardBody, CButton } from '@coreui/react'
-import { DocsLink } from 'src/components'
 import { ProgramCard } from '../../components/ProgramCard'
 import { useDispatch, useSelector } from 'react-redux'
 

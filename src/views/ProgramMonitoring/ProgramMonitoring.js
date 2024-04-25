@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { ProgramCard } from '../../components/ProgramCard'
+import { ProgramCard } from '../../components/'
 import { addProgram } from '../../app/features/programs/programsSlice'
 import {
   CRow,
