@@ -1,16 +1,26 @@
 import React, { Suspense } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { CContainer, CSpinner } from '@coreui/react'
+import { useSelector } from 'react-redux'
+const Activities = React.lazy(() => import('../components/Activities'))
 
 // routes config
 import routes from '../routes'
-
 const AppContent = () => {
+  const dynamicRoutes = useSelector((state) => state.programsSlice.programs).map((program) => {
+    return {
+      path: `/Monitoring/${program.programTitle}`,
+      name: program.programTitle,
+      element: Activities,
+    }
+  })
+  const allRoutes = [...routes, ...dynamicRoutes]
+  console.log('allRoutes', allRoutes)
   return (
     <CContainer className="px-4">
       <Suspense fallback={<CSpinner color="primary" />}>
         <Routes>
-          {routes.map((route, idx) => {
+          {allRoutes.map((route, idx) => {
             return (
               route.element && (
                 <Route

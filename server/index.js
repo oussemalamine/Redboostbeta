@@ -28,18 +28,18 @@ const handleActivity = require('./routes/api/handleActivity')
 require('./passport/index')
 
 // Increase payload size limit for body-parser
-app.use(express.json())
+app.use(express.json({ limit: '50mb' })) // Set limit to 50MB or whatever size you need
 app.use(cookieParser())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json({ limit: '50mb' })) // Set a higher limit for JSON requests
 
-app.use(
-  cors({
-    origin: 'http://localhost:3000',
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    credentials: true,
-  }),
-)
+const corsOptions = {
+  origin: 'http://localhost:3000', // Specify the exact origin
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true, // You're using credentials
+}
+
+app.use(cors(corsOptions))
 
 const store = new MongoDBSession({
   uri: db,
@@ -81,6 +81,7 @@ app.delete('/events/:idEvent', deleteEvent)
 app.post('/addProgram', handleProgram)
 app.delete('/deleteProgram/:programId ', handleProgram)
 app.put('/updateProgram/:programId', handleProgram)
+app.post('/loadPrograms', handleProgram)
 app.post('/addActivity', handleActivity)
 app.delete('/deleteActivity/:activityId', handleActivity)
 app.put('/updateActivity/:activityId', handleActivity)

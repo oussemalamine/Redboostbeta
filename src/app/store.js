@@ -1,4 +1,4 @@
-import { configureStore } from '@reduxjs/toolkit'
+import { configureStore, createAsyncThunk } from '@reduxjs/toolkit'
 import loginSliceReducer from './features/login/loginSlice'
 import registerSliceReducer from './features/register/registerSlice'
 import appReducer from './features/appSlice/appSlice'

@@ -1,5 +1,5 @@
 import React from 'react'
 
-export default function Activities({ prop }) {
-  return <div>{prop}</div>
+export default function Activities({ program }) {
+  return <div>{program}Something</div>
 }

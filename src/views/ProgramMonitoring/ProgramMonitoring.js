@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from 'react'
-import { ProgramCard } from '../../components/'
-import { addProgram } from '../../app/features/programs/programsSlice'
+import { useDispatch, useSelector } from 'react-redux'
+import {
+  createProgram,
+  loadPrograms,
+  updateProgram,
+  deleteProgram,
+} from '../../app/features/programs/programsSlice'
+import { ProgramCard } from '../../components/ProgramCard'
 import {
   CRow,
   CCol,
@@ -25,16 +31,31 @@ const users = [
   { id: 2, name: 'fares' },
   { id: 3, name: 'mojadi' },
 ]
-import { useDispatch, useSelector } from 'react-redux'
+
 export default function ProgramMonitoring() {
   const dispatch = useDispatch()
-  const programs = useSelector((state) => state.programsSlice.data)
-  const [logo, setLogo] = useState()
-  const [programName, setProgramName] = useState('')
+  useEffect(() => {
+    dispatch(loadPrograms())
+  }, [dispatch])
+  const programs = useSelector((state) => {
+    console.log('state', state.programsSlice.status)
+    return state.programsSlice.programs
+  })
+  console.log('programs', programs)
+  const [logo, setLogo] = useState(null)
+  const [programTitle, setProgramTitle] = useState('')
+  const [programDescription, setProgramDescription] = useState('')
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
   const [budget, setBudget] = useState('')
   const [visible, setVisible] = useState(false)
+  // Dispatch createProgram and then loadPrograms after the program is successfully created
+  const addNewProgram = (programData) => {
+    dispatch(createProgram(programData)).then(() => {
+      dispatch(loadPrograms())
+    })
+    setVisible(false)
+  }
   const handleImageChange = (e) => {
     const file = e.target.files[0]
     const reader = new FileReader()
@@ -81,7 +102,17 @@ export default function ProgramMonitoring() {
                 placeholder="Program Name"
                 aria-label="Program Name"
                 aria-describedby="basic-addon2"
-                onChange={(e) => setProgramName(e.target.value)}
+                onChange={(e) => setProgramTitle(e.target.value)}
+              />
+            </CInputGroup>
+            <CInputGroup className="mb-3">
+              <CFormInput
+                type="text-area"
+                id="program description"
+                placeholder="Program Description"
+                aria-label="Program Description"
+                aria-describedby="basic-addon2"
+                onChange={(e) => setProgramDescription(e.target.value)}
               />
             </CInputGroup>
 
@@ -134,17 +165,16 @@ export default function ProgramMonitoring() {
                 <CButton
                   color="primary"
                   onClick={() => {
-                    dispatch(
-                      addProgram({
-                        id: programs.length,
-                        title: programName,
-                        start_date: startDate,
-                        end_date: endDate,
-                        budget: budget,
-                        logo: logo,
-                      }),
-                    )
-                    setVisible(false)
+                    const programData = {
+                      logo,
+                      programTitle,
+                      programDescription,
+                      startDate,
+                      endDate,
+                      budget,
+                      programLead: '661e8b45fb922cf0ecce11c4',
+                    }
+                    addNewProgram(programData)
                   }}
                 >
                   Add Program
@@ -167,8 +197,8 @@ export default function ProgramMonitoring() {
               <CCol key={index} xs={12} sm={6} md={4} lg={3}>
                 <ProgramCard
                   logo={program.logo}
-                  title={program.title}
-                  path={`${window.location.pathname}/${program.title}`}
+                  title={program.programTitle}
+                  path={`${window.location.pathname}/${program.programTitle}`}
                 />
               </CCol>
             ))}

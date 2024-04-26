@@ -1,11 +1,21 @@
 import React from 'react'
 import { useLocation } from 'react-router-dom'
-
+import { useSelector } from 'react-redux'
 import routes from '../routes'
 
 import { CBreadcrumb, CBreadcrumbItem } from '@coreui/react'
 
+const Activities = React.lazy(() => import('../components/Activities'))
 const AppBreadcrumb = () => {
+  const dynamicRoutes = useSelector((state) => state.programsSlice.programs).map((program) => {
+    return {
+      path: `/Monitoring/${program.programTitle}`,
+      name: program.programTitle,
+      element: Activities,
+    }
+  })
+  const allRoutes = [...routes, ...dynamicRoutes]
+  console.log('App Content All routes', allRoutes)
   const currentLocation = useLocation().pathname
 
   const getRouteName = (pathname, routes) => {
@@ -17,7 +27,7 @@ const AppBreadcrumb = () => {
     const breadcrumbs = []
     location.split('/').reduce((prev, curr, index, array) => {
       const currentPathname = `${prev}/${curr}`
-      const routeName = getRouteName(currentPathname, routes)
+      const routeName = getRouteName(currentPathname, allRoutes)
       routeName &&
         breadcrumbs.push({
           pathname: currentPathname,
@@ -29,7 +39,7 @@ const AppBreadcrumb = () => {
     return breadcrumbs
   }
 
-  const breadcrumbs = getBreadcrumbs(currentLocation.replace('/Dash', ''));
+  const breadcrumbs = getBreadcrumbs(currentLocation.replace('/Dash', ''))
   return (
     <CBreadcrumb className="my-0">
       <CBreadcrumbItem href="/">Home</CBreadcrumbItem>

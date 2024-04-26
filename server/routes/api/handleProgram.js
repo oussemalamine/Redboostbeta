@@ -65,4 +65,19 @@ router.put('/updateProgram/:programId', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' })
   }
 })
+
+// Route to load programs
+router.post('/loadPrograms', async (req, res) => {
+  try {
+    // Fetch programs from the database
+    const programs = await Program.find()
+
+    // Respond with the programs
+    res.status(200).json(programs)
+  } catch (error) {
+    console.error('Error loading programs:', error)
+    res.status(500).json({ error: 'Internal server error' })
+  }
+})
+
 module.exports = router
