@@ -51,6 +51,10 @@ const UserSchema = new mongoose.Schema({
     type: String,
     default: 'Undefined',
   },
+  behance: {
+    type: String,
+    default: 'Undefined',
+  },
   birthday: {
     type: String,
     default: 'Undefined',

@@ -6,31 +6,33 @@ import './profile.css'
 import Modal from './PhotoModal'
 import EditProfileModal from './EditModal'
 import axiosInstance from '../../axiosInstance'
-
-const UserProfileHeader = ({ userData, setUserData }) => {
+import { useDispatch, useSelector } from 'react-redux'
+import { setUserData } from '../../app/features/userData/userData'
+const UserProfileHeader = ({ user, setUser }) => {
   const [visible, setVisible] = useState(false)
   const [image, setImage] = useState(null)
   const [open, setOpen] = useState(false)
   const [updateLog, setUpdateLog] = useState([])
   const [isOpen, setIsOpen] = useState(false)
+  const dispatch = useDispatch()
   useEffect(() => {
     const updateUserLogs = async () => {
       try {
         const updatedLogs = [
-          ...userData.logs, // Existing logs
+          ...user.logs, // Existing logs from user
           ...updateLog, // New logs to append
         ]
 
-        const response = await axiosInstance.put(`/users/${userData._id}`, {
+        const response = await axiosInstance.put(`/users/${user._id}`, {
           logs: updatedLogs,
         })
 
         if (response.data) {
           console.log('Logs Updated')
-          setUserData((prevUser) => ({
+          setUser((prevUser) => ({
             ...prevUser,
             logs: updatedLogs,
-          }))
+          })) // Update logs in Redux state
           setUpdateLog([])
         } else {
           console.log('Error in updating Logs')
@@ -39,16 +41,17 @@ const UserProfileHeader = ({ userData, setUserData }) => {
         console.error('Error updating Logs:', error)
       }
     }
+
     if (updateLog.length > 0) {
       updateUserLogs()
     }
-  }, [updateLog, userData])
+  }, [updateLog, user, dispatch])
   const handleConfirmPhoto = async () => {
     try {
       const formData = new FormData()
       formData.append('image', image) // Assuming image is a File object obtained from input[type=file]
       console.log('formData :', formData)
-      const response = await axiosInstance.put(`/users/${userData._id}`, formData, {
+      const response = await axiosInstance.put(`/users/${user._id}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -56,6 +59,8 @@ const UserProfileHeader = ({ userData, setUserData }) => {
 
       if (response.status === 200) {
         console.log('User photo updated successfully:', response.data)
+        const updatedUser = { ...user, image: response.data.image }
+        dispatch(setUserData(updatedUser))
         const currentDate = new Date().toLocaleDateString()
         setUpdateLog((prevUpdateLog) => {
           const updatedLogs = [...prevUpdateLog]
@@ -72,7 +77,7 @@ const UserProfileHeader = ({ userData, setUserData }) => {
           }
           return updatedLogs
         })
-        setUserData((prevUser) => ({
+        setUser((prevUser) => ({
           ...prevUser,
           image: response.data.image,
         }))
@@ -98,22 +103,22 @@ const UserProfileHeader = ({ userData, setUserData }) => {
       'adress',
       'birthday',
       'image',
-      'password',
     ]
     const completedFields = fieldsToCheck.filter((field) => {
-      const value = userData[field]
+      const value = user[field]
       return value !== undefined && value !== '' && value !== 'Undefined'
     })
     const completionPercentage = (completedFields.length / fieldsToCheck.length) * 100
     return completionPercentage.toFixed(2)
   }
   const completionPercentage = calculateCompletionPercentage()
+
   return (
     <>
       <Modal setImage={setImage} visible={visible} setVisible={setVisible} />
       <EditProfileModal
-        userData={userData}
-        setUserData={setUserData}
+        user={user}
+        setUser={setUser}
         setUpdateLog={setUpdateLog}
         isOpen={isOpen}
         setIsOpen={setIsOpen}
@@ -126,7 +131,7 @@ const UserProfileHeader = ({ userData, setUserData }) => {
             <CAvatar
               size="xl"
               status="success"
-              src={image ? image : userData.image ? userData.image : null}
+              src={image ? image : user.image ? user.image : null}
               className="mx-auto d-block mb-3"
             />
           </div>
@@ -137,7 +142,11 @@ const UserProfileHeader = ({ userData, setUserData }) => {
                 <CButton color="primary" onClick={handleConfirmPhoto}>
                   Confirm
                 </CButton>
-                <CButton style={{marginLeft :"10px"}} color="danger" onClick={() => setImage(null)}>
+                <CButton
+                  style={{ marginLeft: '10px' }}
+                  color="danger"
+                  onClick={() => setImage(null)}
+                >
                   Cancel
                 </CButton>
               </>
@@ -147,9 +156,9 @@ const UserProfileHeader = ({ userData, setUserData }) => {
               </CButton>
             )}
           </div>
-          <h4>{userData.username}</h4>
+          <h4>{user.username}</h4>
           <div className="text-center">
-            <CIcon icon={cilStar} /> <strong>{userData.exp} points</strong>
+            <CIcon icon={cilStar} /> <strong>{user.exp} points</strong>
           </div>
           <div className="progress" style={{ width: '40%', margin: '20px auto' }}>
             <div
@@ -164,12 +173,15 @@ const UserProfileHeader = ({ userData, setUserData }) => {
             </div>
           </div>
           <div className="m-4 text-center">
-            <p className="mx-5">{userData.bio}</p>
+            <p className="mx-5">{user.bio}</p>
           </div>
 
           <div className="d-flex justify-content-center mb-3 profile-links">
-            <a href={userData.linkedIn} target="_blank" rel="noopener noreferrer" className="me-3">
-              <CIcon icon={cibLinkedinIn} /> {userData.linkedIn}
+            <a href={user.linkedIn} target="_blank" rel="noopener noreferrer" className="me-3">
+              <CIcon icon={cibLinkedinIn} /> {user.linkedIn}
+            </a>
+            <a href={user.behance} target="_blank" rel="noopener noreferrer" className="me-3">
+              <CIcon icon={cibBehance} /> {user.behance}
             </a>
           </div>
           <div className="container mt-5">

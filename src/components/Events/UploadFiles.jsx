@@ -29,6 +29,7 @@ const DropFileInput = (props) => {
   return (
     <>
       <div
+        style={{ height: 'auto'}}
         ref={wrapperRef}
         className="drop-file-input border rounded p-3 mb-3"
         onDragEnter={onDragEnter}

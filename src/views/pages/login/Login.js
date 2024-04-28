@@ -24,6 +24,7 @@ import axiosInstance from '../../../axiosInstance'
 import { handleLogin } from '../../../app/features/login/loginSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { useDebouncedCallback } from 'use-debounce'
+import { setUserData } from '../../../app/features/userData/userData'
 const Login = ({ setIsLogged, isLogged }) => {
   const [visible, setVisible] = useState(false)
   const [error, setError] = useState('')
@@ -43,6 +44,8 @@ const Login = ({ setIsLogged, isLogged }) => {
         .post('/login', values)
         .then((response) => {
           console.log('Authentication successful', response.data)
+          const { password, confirmation, _id, ...userDataWithoutPassword } = response.data.user
+          dispatch(setUserData(userDataWithoutPassword))
           setError('')
           setIsLogged(true)
           navigate('/Dash')

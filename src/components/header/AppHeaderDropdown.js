@@ -23,8 +23,9 @@ import {
 } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 import axiosInstance from '../../axiosInstance'
-
-const AppHeaderDropdown = ({ userData, setIsLogged }) => {
+import { useSelector } from 'react-redux'
+const AppHeaderDropdown = ({ setIsLogged }) => {
+  const userData = useSelector((state) => state.userData.userData)
   const navigate = useNavigate()
   const handleLogout = async () => {
     try {

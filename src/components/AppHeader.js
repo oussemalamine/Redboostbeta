@@ -28,7 +28,7 @@ import {
 import { AppBreadcrumb } from './index'
 import { AppHeaderDropdown } from './header/index'
 import { set } from '../app/features/appSlice/appSlice'
-const AppHeader = ({ userData, setIsLogged }) => {
+const AppHeader = ({ setIsLogged }) => {
   const headerRef = useRef()
   const { colorMode, setColorMode } = useColorModes('coreui-free-react-admin-template-theme')
 
@@ -127,7 +127,7 @@ const AppHeader = ({ userData, setIsLogged }) => {
           <li className="nav-item py-1">
             <div className="vr h-100 mx-2 text-body text-opacity-75"></div>
           </li>
-          <AppHeaderDropdown userData={userData} setIsLogged={setIsLogged} />
+          <AppHeaderDropdown setIsLogged={setIsLogged} />
         </CHeaderNav>
       </CContainer>
       <CContainer className="px-4" fluid>

@@ -31,7 +31,7 @@ import {
 } from '@coreui/icons'
 import axiosInstance from '../../axiosInstance'
 
-const PersonalDetails = ({ userData, setUserData }) => {
+const PersonalDetails = ({ user, setUser }) => {
   const [isEditing, setIsEditing] = useState(false)
   const [updateLog, setUpdateLog] = useState([])
   const [editedData, setEditedData] = useState([])
@@ -40,17 +40,17 @@ const PersonalDetails = ({ userData, setUserData }) => {
     const updateUserLogs = async () => {
       try {
         const updatedLogs = [
-          ...userData.logs, // Existing logs
+          ...user.logs, // Existing logs
           ...updateLog, // New logs to append
         ]
 
-        const response = await axiosInstance.put(`/users/${userData._id}`, {
+        const response = await axiosInstance.put(`/users/${user._id}`, {
           logs: updatedLogs,
         })
 
         if (response.data) {
           console.log('Logs Updated')
-          setUserData((prevUser) => ({
+          setUser((prevUser) => ({
             ...prevUser,
             logs: updatedLogs,
           }))
@@ -65,7 +65,7 @@ const PersonalDetails = ({ userData, setUserData }) => {
     if (updateLog.length > 0) {
       updateUserLogs()
     }
-  }, [updateLog, userData])
+  }, [updateLog, user])
 
   // Function to handle edit mode toggle
   const toggleEditMode = () => {
@@ -75,12 +75,12 @@ const PersonalDetails = ({ userData, setUserData }) => {
     try {
       const updatedData = {}
       editedData.forEach((field) => {
-        updatedData[field] = userData[field]
+        updatedData[field] = user[field]
       })
       if (updateLog.length > 0) {
-        updatedData.logs = [...userData.logs, ...updateLog]
+        updatedData.logs = [...user.logs, ...updateLog]
       }
-      const response = await axiosInstance.put(`/users/${userData._id}`, updatedData)
+      const response = await axiosInstance.put(`/users/${user._id}`, updatedData)
       if (response.status === 200) {
         console.log('User updated successfully:', response.data)
         if (editedData.length > 0) {
@@ -115,7 +115,7 @@ const PersonalDetails = ({ userData, setUserData }) => {
   }
   const handleChange = (e) => {
     const { name, value } = e.target
-    setUserData((prevUser) => ({
+    setUser((prevUser) => ({
       ...prevUser,
       [name]: value,
     }))
@@ -166,19 +166,19 @@ const PersonalDetails = ({ userData, setUserData }) => {
 
   // Mock data until you fix data from the database
   const personalDetails = [
-    { name: 'cin', icon: cibOrcid, label: 'N°CIN', value: userData.cin },
-    { name: 'email', icon: cibGmail, label: 'Email', value: userData.email },
-    { name: 'phone', icon: cilPhone, label: 'Phone', value: userData.phone },
-    { name: 'adress', icon: cilContact, label: 'Address', value: userData.adress },
+    { name: 'cin', icon: cibOrcid, label: 'N°CIN', value: user.cin },
+    { name: 'email', icon: cibGmail, label: 'Email', value: user.email },
+    { name: 'phone', icon: cilPhone, label: 'Phone', value: user.phone },
+    { name: 'adress', icon: cilContact, label: 'Address', value: user.adress },
     {
       name: 'matricule',
       icon: cilSpreadsheet,
       label: 'Matricule fiscale',
-      value: userData.matricule,
+      value: user.matricule,
     },
-    { name: 'role', icon: cilCode, label: 'Role', value: userData.role },
-    { name: 'department', icon: cilInstitution, label: 'Department', value: userData.department },
-    { name: 'birthday', icon: cilBirthdayCake, label: 'Birthday', value: userData.birthday },
+    { name: 'role', icon: cilCode, label: 'Role', value: user.role },
+    { name: 'department', icon: cilInstitution, label: 'Department', value: user.department },
+    { name: 'birthday', icon: cilBirthdayCake, label: 'Birthday', value: user.birthday },
     { name: 'password', icon: cilLockLocked, label: 'Password', value: '************' },
     // Add more rows as needed
   ]

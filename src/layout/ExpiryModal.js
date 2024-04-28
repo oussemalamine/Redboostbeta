@@ -16,6 +16,7 @@ function ExpiryModal({ setIsLogged, setModalOpen, modalOpen }) {
           setIsLogged(false)
         }}
         aria-labelledby="LiveDemoExampleLabel"
+        backdrop="static"
       >
         <CModalHeader
           onClose={() => {
