@@ -22,7 +22,6 @@ router.post('/login', async (req, res, next) => {
           })
         }
         req.session.email = user.email
-        req.session.loginTime = new Date().toISOString()
         return res.send({ user, info })
       })
     } catch (error) {

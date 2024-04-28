@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   CCard,
   CCardBody,
@@ -9,73 +9,69 @@ import {
   CTableBody,
   CAlert,
   CSpinner,
+  CContainer,
 } from '@coreui/react'
 import UserProfileHeader from './UserProfileHeader'
 import PersonalDetails from './PersonalDetails'
-import axiosInstance from '../../axiosInstance'
+import { useSelector } from 'react-redux'
 
 const UserProfile = () => {
-  const [userData, setUserData] = useState(null)
-  const [loading, setLoading] = useState(true)
-
-  const email = 'oussema@gmail.com'
-
+  const userData = useSelector((state) => state.userData.userData)
+  console.log('userData :', userData)
+  const [user, setUser] = useState(null)
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response = await axiosInstance.get(`/users?email=${email}`)
-        if (response.data) {
-          setUserData(response.data)
-          setLoading(false)
-        }
-      } catch (error) {
-        console.log('Error in fetching Data:', error)
-        setLoading(false)
-      }
-    }
-    fetchUser()
-  }, [email])
-
+    setUser(userData)
+  }, [userData])
+  if (!user) {
+    return (
+      <CContainer style={{ padding: '20px' }} className="mt-4">
+        <CRow>
+          <CCol xs="auto">
+            <CSpinner color="primary" />
+          </CCol>
+        </CRow>
+      </CContainer>
+    )
+  }
   return (
     <>
-      {loading ? (
-        <CSpinner color="primary" style={{ width: '3rem', height: '3rem' }} className="spinner" />
-      ) : (
-        <>
-          <CRow>
-            <CCol>
-              <UserProfileHeader userData={userData} setUserData={setUserData} />
-            </CCol>
-          </CRow>
+      <CRow>
+        <CCol>
+          <UserProfileHeader user={user} setUser={setUser} />
+        </CCol>
+      </CRow>
 
-          <CRow className="mb-3">
-            <CCol xs={12} md={6} className="mb-3 mb-md-0">
-              <PersonalDetails userData={userData} setUserData={setUserData} />
-            </CCol>
-            <CCol xs={12} md={6} className="mb-3 mb-md-0">
-              <CCard>
-                <CCardHeader className="bg-dark text-light">History</CCardHeader>
-                <CCardBody style={{ maxHeight: '600px', overflow: 'auto' }}>
-                  <CTable>
-                    <CTableBody>
-                      {userData.logs.map((log, index) => (
-                        <CAlert key={index} color={getColorByIndex(index)}>
-                          {log.date} :{' '}
-                          {log.events.map((event, eventIndex) => (
-                            <span style={{ backgroundColor: 'transparent' }} key={eventIndex}>
-                              {event}
-                            </span>
-                          ))}
-                        </CAlert>
-                      ))}
-                    </CTableBody>
-                  </CTable>
-                </CCardBody>
-              </CCard>
-            </CCol>
-          </CRow>
-        </>
-      )}
+      <CRow className="mb-3">
+        <CCol xs={12} md={6} className="mb-3 mb-md-0">
+          <PersonalDetails user={user} setUser={setUser} />
+        </CCol>
+        <CCol xs={12} md={6} className="mb-3 mb-md-0">
+          <CCard>
+            <CCardHeader className="bg-dark text-light">History</CCardHeader>
+            <CCardBody style={{ maxHeight: '600px', overflow: 'auto' }}>
+              <CTable>
+                <CTableBody>
+                  {user && user.logs && user.logs.length > 0 ? (
+                    // Render logs only if user and user.logs are not undefined
+                    user.logs.map((log, index) => (
+                      <CAlert key={index} color={getColorByIndex(index)}>
+                        {log.date} :{' '}
+                        {log.events.map((event, eventIndex) => (
+                          <span style={{ backgroundColor: 'transparent' }} key={eventIndex}>
+                            {event}
+                          </span>
+                        ))}
+                      </CAlert>
+                    ))
+                  ) : (
+                    <CAlert color="warning">No logs found.</CAlert>
+                  )}
+                </CTableBody>
+              </CTable>
+            </CCardBody>
+          </CCard>
+        </CCol>
+      </CRow>
     </>
   )
 }

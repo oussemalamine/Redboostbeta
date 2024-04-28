@@ -1,11 +1,13 @@
 import React, { Suspense, useEffect, useState } from 'react'
 import { Route, Routes } from 'react-router-dom'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { Navigate } from 'react-router-dom'
 import { CSpinner, useColorModes } from '@coreui/react'
 import './scss/style.scss'
 import axiosInstance from './axiosInstance'
 import ResetPassword from './components/ResetPassword'
+import { setUserData } from './app/features/userData/userData'
+import { setEvents } from './app/features/events/events'
 // import ProtectedRoute from './ProtectedRoute'
 // Containers
 const DefaultLayout = React.lazy(() => import('./layout/DefaultLayout'))
@@ -19,11 +21,10 @@ const Page500 = React.lazy(() => import('./views/pages/page500/Page500'))
 const App = () => {
   const { isColorModeSet, setColorMode } = useColorModes('coreui-free-react-admin-template-theme')
   const storedTheme = useSelector((state) => state.theme)
-  const [userEmail, setUserEmail] = useState('')
-  const [userData, setUserData] = useState('')
+  // const [userEmail, setUserEmail] = useState('')
   const [loading, setLoading] = useState(true)
-  const [events, setEvents] = useState([])
   const [isLogged, setIsLogged] = useState(false)
+  const dispatch = useDispatch()
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.href.split('?')[1])
     const theme = urlParams.get('theme') && urlParams.get('theme').match(/^[A-Za-z0-9\s]+/)[0]
@@ -42,11 +43,10 @@ const App = () => {
     const checkAuth = async () => {
       await axiosInstance.get('/login').then((response) => {
         if (response.data.authenticated) {
+          // setUserEmail(response.data.email)
           setIsLogged(true)
-          setUserEmail(response.data.email)
         } else {
           setIsLogged(false)
-          setUserEmail('')
         }
         setLoading(false)
         console.log('checkAuth:', response.data)
@@ -54,31 +54,27 @@ const App = () => {
     }
     checkAuth()
   }, [])
-  useEffect(() => {
-    const fetchUser = async () => {
-      if (userEmail) {
-        try {
-          const response = await axiosInstance.get(`/users?email=${userEmail}`)
-          if (response.data) {
-            console.log(response.data)
-            setUserData(response.data)
-            setLoading(false) // Update loading state when done
-          }
-        } catch (error) {
-          console.log('Error fetching user data:', error)
-          setLoading(false) // Handle loading state in case of errors
-        }
-      }
-    }
-    fetchUser()
-  }, [userEmail])
+  // useEffect(() => {
+  //   if (userEmail.length === 0) return
+  //   const fetchUser = async () => {
+  //     try {
+  //       const response = await axiosInstance.get(`/users?email=${userEmail}`)
+  //       if (response.data) {
+  //         const { password, confirmation, ...userDataWithoutPassword } = response.data
+  //         dispatch(setUserData(userDataWithoutPassword))
+  //       }
+  //     } catch (error) {
+  //       console.log('Error fetching user data:', error)
+  //     }
+  //   }
+  //   fetchUser()
+  // }, [userEmail])
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axiosInstance.get('/events')
         if (response.data) {
-          console.log(response.data)
-          setEvents(response.data)
+          dispatch(setEvents(response.data))
         }
       } catch (error) {
         console.log('Failed to fetch events ;', error)
@@ -86,9 +82,8 @@ const App = () => {
     }
     fetchData()
   }, [])
-  console.log(isLogged)
 
-  if (loading ) {
+  if (loading) {
     return (
       <Suspense
         fallback={
@@ -121,13 +116,7 @@ const App = () => {
         <Route exact path="/password-reset" name=" Account Recovery" element={<ResetPassword />} />
         <Route
           path="/Dash/*"
-          element={
-            isLogged ? (
-              <DefaultLayout setIsLogged={setIsLogged} userData={userData} />
-            ) : (
-              <Navigate to="/" />
-            )
-          }
+          element={isLogged ? <DefaultLayout setIsLogged={setIsLogged} /> : <Navigate to="/" />}
         />
       </Routes>
     </Suspense>

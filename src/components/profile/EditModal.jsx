@@ -15,32 +15,16 @@ import {
 } from 'reactstrap'
 import axiosInstance from '../../axiosInstance'
 
-const EditProfileModal = ({ userData, setUserData, setUpdateLog, isOpen, setIsOpen }) => {
-  const [additionalLinks, setAdditionalLinks] = useState([''])
+const EditProfileModal = ({ user, setUser, setUpdateLog, isOpen, setIsOpen }) => {
   const [editedData, setEditedData] = useState([])
 
-  const handleAddLink = () => {
-    setAdditionalLinks([...additionalLinks, ''])
-  }
-  const handleRemoveLink = (index) => {
-    const newAdditionalLinks = [...additionalLinks]
-    if (index === 0) return
-    newAdditionalLinks.splice(index, 1)
-    setAdditionalLinks(newAdditionalLinks)
-  }
-
-  const handleLinkChange = (index, value) => {
-    const updatedLinks = [...additionalLinks]
-    updatedLinks[index] = value
-    setAdditionalLinks(updatedLinks)
-  }
   const handleConfirm = async () => {
     try {
       const updatedData = {}
       editedData.forEach((field) => {
-        updatedData[field] = userData[field]
+        updatedData[field] = user[field]
       })
-      const response = await axiosInstance.put(`/users/${userData._id}`, updatedData)
+      const response = await axiosInstance.put(`/users/${user._id}`, updatedData)
       if (response.status === 200) {
         console.log('User updated successfully:', response.data)
         if (editedData.length > 0) {
@@ -75,7 +59,7 @@ const EditProfileModal = ({ userData, setUserData, setUpdateLog, isOpen, setIsOp
   }
   const handleChange = (e) => {
     const { name, value } = e.target
-    setUserData((prevUser) => ({
+    setUser((prevUser) => ({
       ...prevUser,
       [name]: value,
     }))
@@ -88,7 +72,6 @@ const EditProfileModal = ({ userData, setUserData, setUpdateLog, isOpen, setIsOp
         updatedData[index] = name
         return updatedData
       } else {
-        // If name doesn't exist, add it
         return [...prev, name]
       }
     })
@@ -116,27 +99,8 @@ const EditProfileModal = ({ userData, setUserData, setUpdateLog, isOpen, setIsOp
             </Col>
             <Col md="6">
               <FormGroup>
-                <Label>Additional Links</Label>
-                {additionalLinks.map((link, index) => (
-                  <CInputGroup key={index} className="mb-4">
-                    <CFormInput
-                      key={index}
-                      type="text"
-                      value={link}
-                      onChange={(e) => handleLinkChange(index, e.target.value)}
-                      placeholder="Enter link"
-                    />
-                    <CInputGroupText
-                      className="bg-danger text-white"
-                      onClick={() => handleRemoveLink(index)}
-                    >
-                      X
-                    </CInputGroupText>
-                  </CInputGroup>
-                ))}
-                <Button className="mt-2" color="primary" onClick={handleAddLink}>
-                  Add Link
-                </Button>
+                <Label for="linkedinInput">BeHance Link:</Label>
+                <Input type="text" id="behnaceInput" name="behance" onChange={handleChange} />
               </FormGroup>
             </Col>
           </Row>

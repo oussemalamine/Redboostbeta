@@ -20,6 +20,7 @@ import {
 } from '@coreui/react'
 import EventInfoModal from './EventInfoModal'
 import axiosInstance from '../../axiosInstance'
+import { useSelector } from 'react-redux'
 const EventList = ({ events }) => {
   const itemsPerPage = 8
   const [currentPage, setCurrentPage] = useState(1)
@@ -88,31 +89,17 @@ const EventList = ({ events }) => {
 }
 
 const Calendar = () => {
-  const [events, setEvents] = useState()
+  // const [events, setEvents] = useState()
   const [selectedEvent, setSelectedEvent] = useState(null)
+  const events = useSelector((state) => state.events.events)
   const handleEventClick = (clickInfo) => {
     const event = clickInfo.event
     setSelectedEvent(event)
   }
-  useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        const response = await axiosInstance.get('/events')
-        if (response.data) {
-          setEvents(response.data)
-        }
-        console.log(response.data) // Check response data
-      } catch (error) {
-        console.error('Error Fetching events:', error)
-      }
-    }
-
-    fetchEvents()
-  }, [])
   if (!events) {
     return (
       <CContainer style={{ padding: '20px' }} className="mt-4">
-        <CRow >
+        <CRow>
           <CCol xs="auto">
             <CSpinner color="primary" />
           </CCol>
