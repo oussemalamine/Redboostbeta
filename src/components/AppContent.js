@@ -6,12 +6,14 @@ const Activities = React.lazy(() => import('../components/Activities'))
 
 // routes config
 import routes from '../routes'
+
 const AppContent = () => {
   const dynamicRoutes = useSelector((state) => state.programsSlice.programs).map((program) => {
     return {
       path: `/Monitoring/${program.programTitle}`,
       name: program.programTitle,
-      element: Activities,
+      // Wrap the lazy-loaded component in a functional component to pass props
+      element: (props) => <Activities {...props} program={program} />,
     }
   })
   const allRoutes = [...routes, ...dynamicRoutes]

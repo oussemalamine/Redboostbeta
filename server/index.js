@@ -26,7 +26,7 @@ const forgetPassword = require('./routes/api/ForgetPassword')
 const handleProgram = require('./routes/api/handleProgram')
 const handleActivity = require('./routes/api/handleActivity')
 require('./passport/index')
-
+const users = require('./routes/api/users')
 // Increase payload size limit for body-parser
 app.use(express.json({ limit: '50mb' })) // Set limit to 50MB or whatever size you need
 app.use(cookieParser())
@@ -85,6 +85,7 @@ app.post('/loadPrograms', handleProgram)
 app.post('/addActivity', handleActivity)
 app.delete('/deleteActivity/:activityId', handleActivity)
 app.put('/updateActivity/:activityId', handleActivity)
+app.post('/loadUsers', users)
 // Database + Server Connection Validation
 mongoose
   .connect(db)
